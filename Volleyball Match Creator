@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+  Volleyball League Manager
+</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
+
+<style>
+
+:root {
+
+  --bg: #000000;
+  --surface: #111827;
+  --surface-2: #0f172a;
+
+  --text: #ffffff;
+  --muted: #94a3b8;
+
+  --yellow: #facc15;
+  --blue: #2563eb;
+
+  --border: #334155;
+
+}
+
+body {
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  background:
+    radial-gradient(circle at top left,
+    rgba(250,204,21,0.12),
+    transparent 30%),
+
+    radial-gradient(circle at top right,
+    rgba(37,99,235,0.12),
+    transparent 30%),
+
+    #000;
+
+  color: white;
+
+  min-height: 100vh;
+
+}
+
+.card {
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(17,24,39,0.95),
+      rgba(15,23,42,0.95)
+    );
+
+  border: 1px solid var(--border);
+
+  border-radius: 22px;
+
+}
+
+.team-chip {
+
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  background: rgba(255,255,255,0.05);
+
+}
+
+.score-input {
+
+  width: 56px;
+
+  background: #020617;
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  text-align: center;
+
+  padding: 6px;
+
+  color: white;
+
+}
+
+.winner-badge {
+
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  background: rgba(250,204,21,0.12);
+
+  border: 1px solid rgba(250,204,21,0.3);
+
+  color: #facc15;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+}
+
+.rank-pill {
+
+  width: 34px;
+  height: 34px;
+
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+
+  background: #111827;
+
+  border: 1px solid var(--border);
+
+}
+
+.rank-1 {
+
+  background: #facc15;
+  color: black;
+
+}
+
+.rank-2 {
+
+  background: #2563eb;
+  color: white;
+
+}
+
+.qualified-row {
+
+  background: rgba(250,204,21,0.05);
+
+}
+
+.scroll-wrap {
+
+  overflow-x: auto;
+
+}
+
+table {
+
+  width: 100%;
+
+  border-collapse: collapse;
+
+}
+
+th {
+
+  text-align: left;
+
+  padding: 14px 10px;
+
+  font-size: 12px;
+
+  color: var(--muted);
+
+  border-bottom: 1px solid var(--border);
+
+}
+
+td {
+
+  padding: 14px 10px;
+
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+
+}
+
+.stat-positive {
+
+  color: #4ade80;
+
+}
+
+.stat-negative {
+
+  color: #f87171;
+
+}
+
+.stat-neutral {
+
+  color: #94a3b8;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <!-- HEADER -->
+
+  <div class="flex items-center gap-4 mb-8">
+
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center"
+         style="background:linear-gradient(135deg,#facc15,#2563eb);">
+
+      🏐
+
+    </div>
+
+    <div>
+
+      <h1 class="text-3xl font-bold">
+
+        Volleyball League Match Record Sheet
+
+      </h1>
+
+      <p class="text-sm text-slate-400">
+
+        Men's Division • Double Round Robin
+
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- MATCHES -->
+
+  <section class="card p-6 mb-6">
+
+    <div class="mb-6">
+
+      <h2 class="text-xl font-bold">
+
+        Match Schedule
+
+      </h2>
+
+      <p class="text-sm text-slate-400">
+
+        Official Game Order
+
+      </p>
+
+    </div>
+
+    <div class="scroll-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Game</th>
+            <th>Matchup</th>
+            <th>Set 1</th>
+            <th>Set 2</th>
+            <th>Set 3</th>
+            <th>Winner</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="matches-body"></tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+  <!-- STANDINGS -->
+
+  <section class="card p-6 mb-6">
+
+    <div class="mb-6">
+
+      <h2 class="text-xl font-bold">
+
+        Team Standings Tracker
+
+      </h2>
+
+      <p class="text-sm text-slate-400">
+
+        Auto-computed based on match scores
+
+      </p>
+
+    </div>
+
+    <div class="scroll-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>#</th>
+            <th>Team</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Sets Won</th>
+            <th>Sets Lost</th>
+            <th>Set Difference</th>
+            <th>Points Scored</th>
+            <th>Points Allowed</th>
+            <th>Point Difference</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="standings-body"></tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+  <!-- TIEBREAKERS -->
+
+  <section class="card p-6">
+
+    <h2 class="text-xl font-bold mb-4">
+
+      Ranking Tiebreakers
+
+    </h2>
+
+    <div class="space-y-2 text-slate-300">
+
+      <p>
+        1. Match wins
+      </p>
+
+      <p>
+        2. Head-to-head (if 2 teams are tied)
+      </p>
+
+      <p>
+        3. Set difference
+      </p>
+
+      <p>
+        4. Point difference
+      </p>
+
+      <p>
+        5. Coin toss if still tied
+      </p>
+
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+
+const TEAMS = [
+
+  'Red',
+  'Green',
+  'Blue',
+  'Black',
+  'Uchayan Feeds Supply'
+
+];
+
+const matches = [
+
+  ['Red','Black'],
+  ['Green','Blue'],
+  ['Black','Uchayan Feeds Supply'],
+  ['Red','Blue'],
+  ['Green','Black'],
+  ['Red','Green'],
+  ['Blue','Uchayan Feeds Supply'],
+  ['Red','Uchayan Feeds Supply'],
+  ['Blue','Black'],
+  ['Green','Uchayan Feeds Supply'],
+  ['Black','Red'],
+  ['Blue','Green'],
+  ['Uchayan Feeds Supply','Black'],
+  ['Black','Green'],
+  ['Blue','Red'],
+  ['Green','Red'],
+  ['Uchayan Feeds Supply','Blue'],
+  ['Uchayan Feeds Supply','Red'],
+  ['Black','Blue'],
+  ['Uchayan Feeds Supply','Green']
+
+].map(match => ({
+
+  a: match[0],
+  b: match[1],
+
+  sets: [
+
+    {a:null,b:null},
+    {a:null,b:null},
+    {a:null,b:null}
+
+  ]
+
+}));
+
+function renderMatches() {
+
+  const tbody =
+    document.getElementById('matches-body');
+
+  tbody.innerHTML = '';
+
+  matches.forEach((match,index)=>{
+
+    const tr =
+      document.createElement('tr');
+
+    tr.innerHTML = `
+
+      <td>
+
+        ${index + 1}
+
+      </td>
+
+      <td>
+
+        <div class="flex items-center gap-2">
+
+          <span class="team-chip">
+
+            ${match.a}
+
+          </span>
+
+          <span class="text-slate-500 text-xs font-bold">
+
+            VS
+
+          </span>
+
+          <span class="team-chip">
+
+            ${match.b}
+
+          </span>
+
+        </div>
+
+      </td>
+
+      ${[0,1,2].map(set=>`
+
+        <td>
+
+          <div class="flex items-center gap-2">
+
+            <input type="number"
+                   class="score-input"
+                   data-match="${index}"
+                   data-set="${set}"
+                   data-side="a">
+
+            <span>/</span>
+
+            <input type="number"
+                   class="score-input"
+                   data-match="${index}"
+                   data-set="${set}"
+                   data-side="b">
+
+          </div>
+
+        </td>
+
+      `).join('')}
+
+      <td class="winner-cell">
+
+        —
+
+      </td>
+
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+  attachListeners();
+
+}
+
+function attachListeners() {
+
+  document.querySelectorAll('.score-input')
+    .forEach(input=>{
+
+      input.addEventListener(
+        'input',
+        handleScoreInput
+      );
+
+    });
+
+}
+
+function handleScoreInput(e) {
+
+  const input = e.target;
+
+  const matchIndex =
+    parseInt(input.dataset.match);
+
+  const setIndex =
+    parseInt(input.dataset.set);
+
+  const side =
+    input.dataset.side;
+
+  matches[matchIndex]
+    .sets[setIndex][side] =
+
+      input.value === ''
+        ? null
+        : parseInt(input.value);
+
+  updateWinners();
+
+  computeStandings();
+
+}
+
+function updateWinners() {
+
+  const cells =
+    document.querySelectorAll('.winner-cell');
+
+  matches.forEach((match,index)=>{
+
+    let aWins = 0;
+    let bWins = 0;
+
+    match.sets.forEach(set=>{
+
+      if(set.a !== null && set.b !== null){
+
+        if(set.a > set.b){
+
+          aWins++;
+
+        }
+
+        else if(set.b > set.a){
+
+          bWins++;
+
+        }
+
+      }
+
+    });
+
+    let winner = null;
+
+    if(aWins >= 2){
+
+      winner = match.a;
+
+    }
+
+    else if(bWins >= 2){
+
+      winner = match.b;
+
+    }
+
+    cells[index].innerHTML =
+      winner
+      ? `<span class="winner-badge">${winner}</span>`
+      : '—';
+
+  });
+
+}
+
+function computeStandings() {
+
+  const standings = {};
+
+  TEAMS.forEach(team=>{
+
+    standings[team] = {
+
+      wins:0,
+      losses:0,
+
+      setsWon:0,
+      setsLost:0,
+
+      setDiff:0,
+
+      pointsScored:0,
+      pointsAllowed:0,
+
+      pointDiff:0
+
+    };
+
+  });
+
+  matches.forEach(match=>{
+
+    let aWins = 0;
+    let bWins = 0;
+
+    let pointsA = 0;
+    let pointsB = 0;
+
+    match.sets.forEach(set=>{
+
+      if(set.a !== null && set.b !== null){
+
+        pointsA += set.a;
+        pointsB += set.b;
+
+        if(set.a > set.b){
+
+          aWins++;
+
+        }
+
+        else if(set.b > set.a){
+
+          bWins++;
+
+        }
+
+      }
+
+    });
+
+    standings[match.a].setsWon += aWins;
+    standings[match.a].setsLost += bWins;
+
+    standings[match.b].setsWon += bWins;
+    standings[match.b].setsLost += aWins;
+
+    standings[match.a].pointsScored += pointsA;
+    standings[match.a].pointsAllowed += pointsB;
+
+    standings[match.b].pointsScored += pointsB;
+    standings[match.b].pointsAllowed += pointsA;
+
+    if(aWins >= 2){
+
+      standings[match.a].wins++;
+      standings[match.b].losses++;
+
+    }
+
+    else if(bWins >= 2){
+
+      standings[match.b].wins++;
+      standings[match.a].losses++;
+
+    }
+
+  });
+
+  TEAMS.forEach(team=>{
+
+    standings[team].setDiff =
+
+      standings[team].setsWon -
+      standings[team].setsLost;
+
+    standings[team].pointDiff =
+
+      standings[team].pointsScored -
+      standings[team].pointsAllowed;
+
+  });
+
+  renderStandings(standings);
+
+}
+
+function renderStandings(data) {
+
+  const tbody =
+    document.getElementById('standings-body');
+
+  tbody.innerHTML = '';
+
+  const sorted =
+    Object.entries(data)
+
+      .sort((a,b)=>{
+
+        if(b[1].wins !== a[1].wins){
+
+          return b[1].wins - a[1].wins;
+
+        }
+
+        if(b[1].setDiff !== a[1].setDiff){
+
+          return b[1].setDiff - a[1].setDiff;
+
+        }
+
+        if(b[1].pointDiff !== a[1].pointDiff){
+
+          return b[1].pointDiff - a[1].pointDiff;
+
+        }
+
+        return 0;
+
+      });
+
+  sorted.forEach(([team,stats],index)=>{
+
+    const tr =
+      document.createElement('tr');
+
+    if(index < 2){
+
+      tr.classList.add('qualified-row');
+
+    }
+
+    const setDiffClass =
+      stats.setDiff > 0
+      ? 'stat-positive'
+      : stats.setDiff < 0
+      ? 'stat-negative'
+      : 'stat-neutral';
+
+    const pointDiffClass =
+      stats.pointDiff > 0
+      ? 'stat-positive'
+      : stats.pointDiff < 0
+      ? 'stat-negative'
+      : 'stat-neutral';
+
+    tr.innerHTML = `
+
+      <td>
+
+        <div class="rank-pill
+          ${index===0?'rank-1':''}
+          ${index===1?'rank-2':''}">
+
+          ${index + 1}
+
+        </div>
+
+      </td>
+
+      <td>
+
+        ${team}
+
+      </td>
+
+      <td>
+
+        ${stats.wins}
+
+      </td>
+
+      <td>
+
+        ${stats.losses}
+
+      </td>
+
+      <td>
+
+        ${stats.setsWon}
+
+      </td>
+
+      <td>
+
+        ${stats.setsLost}
+
+      </td>
+
+      <td class="${setDiffClass}">
+
+        ${stats.setDiff > 0 ? '+' : ''}${stats.setDiff}
+
+      </td>
+
+      <td>
+
+        ${stats.pointsScored}
+
+      </td>
+
+      <td>
+
+        ${stats.pointsAllowed}
+
+      </td>
+
+      <td class="${pointDiffClass}">
+
+        ${stats.pointDiff > 0 ? '+' : ''}${stats.pointDiff}
+
+      </td>
+
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+}
+
+renderMatches();
+
+computeStandings();
+
+</script>
+
+</body>
+</html>
